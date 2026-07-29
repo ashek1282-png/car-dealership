@@ -33,3 +33,9 @@ The AI explained that a 401 means the code successfully reached the service laye
 
 **AI Response Summary:**
 The AI explained that `@types/jsonwebtoken` returns a union type that needs to be cast to `unknown` before casting to a custom interface to satisfy strict mode. For the Prisma/Zod clash, it advised mapping the `undefined` values to `null` in the service layer using the nullish coalescing operator (`??`) before passing the data to the repository. This satisfied `exactOptionalPropertyTypes: true` in my `tsconfig.json`.
+
+**User Prompt:**
+> When using `createVehicleSchema.partial()` for my update schema, TypeScript threw an `exactOptionalPropertyTypes` error because Prisma won't accept `undefined` for fields. Then, in the controller, it threw an error saying `req.params.id` might be `string | string[] | undefined`. How do I resolve these?
+
+**AI Response Summary:**
+The AI explained that while Prisma safely ignores `undefined` values at runtime, strict mode flags it during compilation. To fix the service layer, it suggested typing the validated update payload as `any` (or `Prisma.VehicleUpdateInput`) to bypass the strict check while manually mapping `undefined` to `null` for specific fields. For the controller, it advised explicitly casting `req.params.id as string` since Express guarantees path parameters are strings, satisfying the compiler.
