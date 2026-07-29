@@ -27,3 +27,9 @@ The AI explained that this specific Prisma error occurs when the `DATABASE_URL` 
 
 **AI Response Summary:**
 The AI explained that a 401 means the code successfully reached the service layer but explicitly threw the `INVALID_CREDENTIALS` error. It suggested adding targeted console logs to trace the exact failure point: checking whether `prisma.user.findUnique` was failing to find the user in the database, or if `bcrypt.compare` was rejecting the password hash. This debugging strategy helped me isolate the root cause and fix the test state.
+
+**User Prompt:**
+> My authentication middleware is throwing a TypeScript error on `jwt.verify()` saying the returned type doesn't sufficiently overlap with my custom `{ id: string; role: string }` interface. Later, when creating the vehicle service, I got another error because Zod's `.optional()` evaluates to `string | undefined`, but Prisma expects `string | null` for nullable fields. How do I fix these?
+
+**AI Response Summary:**
+The AI explained that `@types/jsonwebtoken` returns a union type that needs to be cast to `unknown` before casting to a custom interface to satisfy strict mode. For the Prisma/Zod clash, it advised mapping the `undefined` values to `null` in the service layer using the nullish coalescing operator (`??`) before passing the data to the repository. This satisfied `exactOptionalPropertyTypes: true` in my `tsconfig.json`.
