@@ -57,4 +57,44 @@ describe('Vehicle Module', () => {
       expect(res.body.quantity).toBe(5);
     });
   });
+
+  describe('GET /api/vehicles', () => {
+      it('should return 401 if not authenticated', async () => {
+        const res = await request(app).get('/api/vehicles');
+        expect(res.status).toBe(401);
+      });
+
+      it('should return a list of vehicles when authenticated', async () => {
+        const res = await request(app)
+          .get('/api/vehicles')
+          .set('Authorization', `Bearer ${token}`);
+
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        // We created one vehicle in the previous POST test
+        expect(res.body.length).toBeGreaterThanOrEqual(1);
+      });
+    });
+
+    describe('GET /api/vehicles/search', () => {
+      it('should filter vehicles by make', async () => {
+        const res = await request(app)
+          .get('/api/vehicles/search?make=Honda')
+          .set('Authorization', `Bearer ${token}`);
+
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body[0].make).toBe('Honda');
+      });
+
+      it('should return an empty array if no vehicles match the search', async () => {
+        const res = await request(app)
+          .get('/api/vehicles/search?make=Ferrari')
+          .set('Authorization', `Bearer ${token}`);
+
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.length).toBe(0);
+      });
+    });
 });

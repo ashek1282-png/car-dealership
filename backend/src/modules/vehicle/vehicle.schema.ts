@@ -11,4 +11,13 @@ export const createVehicleSchema = z.object({
   imageUrl: z.string().optional(),
 });
 
+export const searchVehicleSchema = z.object({
+  make: z.string().optional(),
+  model: z.string().optional(),
+  category: z.string().optional(),
+  minPrice: z.coerce.number().optional(),
+  maxPrice: z.coerce.number().optional(),
+});
+
+export type SearchVehicleInput = z.infer<typeof searchVehicleSchema>;
 export type CreateVehicleInput = z.infer<typeof createVehicleSchema>;
