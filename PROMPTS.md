@@ -21,3 +21,9 @@ The AI provided the boilerplate for the Docker container, environment variables,
 
 **AI Response Summary:**
 The AI explained that this specific Prisma error occurs when the `DATABASE_URL` connection string is missing or not properly loaded in the testing environment, meaning the database password evaluates to undefined. It helped me fix the issue by creating a specific `.env` file in the `backend/` directory with the full `DATABASE_URL` and adding `import 'dotenv/config';` to the top of my `app.ts` file so Vitest could load the variables.
+
+**User Prompt:**
+> I wrote the login controller and service, but my Supertest for valid login is failing with a `401 Unauthorized` instead of `200`. The register test right above it passes, so the user should exist. What could be the issue?
+
+**AI Response Summary:**
+The AI explained that a 401 means the code successfully reached the service layer but explicitly threw the `INVALID_CREDENTIALS` error. It suggested adding targeted console logs to trace the exact failure point: checking whether `prisma.user.findUnique` was failing to find the user in the database, or if `bcrypt.compare` was rejecting the password hash. This debugging strategy helped me isolate the root cause and fix the test state.
