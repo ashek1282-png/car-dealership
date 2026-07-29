@@ -19,5 +19,8 @@ export const searchVehicleSchema = z.object({
   maxPrice: z.coerce.number().optional(),
 });
 
+export const updateVehicleSchema = createVehicleSchema.partial();
+
+export type UpdateVehicleInput = z.infer<typeof updateVehicleSchema>;
 export type SearchVehicleInput = z.infer<typeof searchVehicleSchema>;
 export type CreateVehicleInput = z.infer<typeof createVehicleSchema>;

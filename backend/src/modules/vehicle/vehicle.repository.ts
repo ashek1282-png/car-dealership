@@ -27,3 +27,16 @@ export const searchVehicles = async (filters: SearchVehicleInput) => {
 
   return await prisma.vehicle.findMany({ where });
 };
+
+export const updateVehicle = async (id: string, data: Prisma.VehicleUpdateInput) => {
+  return await prisma.vehicle.update({
+    where: { id },
+    data,
+  });
+};
+
+export const deleteVehicle = async (id: string) => {
+  return await prisma.vehicle.delete({
+    where: { id },
+  });
+};

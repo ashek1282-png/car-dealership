@@ -31,3 +31,11 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
     res.status(401).json({ error: 'Unauthorized: Invalid token' });
   }
 };
+
+export const requireAdmin = (req: Request, res: Response, next: NextFunction): void => {
+  if (!req.user || req.user.role !== 'ADMIN') {
+    res.status(403).json({ error: 'Forbidden: Admin access required' });
+    return;
+  }
+  next();
+};
