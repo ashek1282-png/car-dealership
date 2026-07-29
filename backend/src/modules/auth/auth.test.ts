@@ -29,3 +29,32 @@ describe('Auth Module - POST /api/auth/register', () => {
     expect(res.status).toBe(400);
   });
 });
+
+describe('Auth Module - POST /api/auth/login', () => {
+  it('should login an existing user and return a JWT token', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('token');
+    expect(res.body).toHaveProperty('user');
+    expect(res.body.user.email).toBe('test@example.com');
+    expect(res.body.user).not.toHaveProperty('password');
+  });
+
+  it('should return 401 for invalid credentials', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({
+        email: 'test@example.com',
+        password: 'wrongpassword',
+      });
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+});
