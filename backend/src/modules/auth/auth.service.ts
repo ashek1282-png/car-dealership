@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import * as authRepository from './auth.repository.js';
 import type { RegisterInput, LoginInput } from './auth.schema.js';
-import jwt from "jsonwebtoken"
+import jwt from 'jsonwebtoken';
 
 export const registerUser = async (data: RegisterInput) => {
   const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -34,7 +34,7 @@ export const loginUser = async (data: LoginInput) => {
   const token = jwt.sign(
     { id: user.id, role: user.role },
     process.env.JWT_SECRET || 'fallback_secret',
-    { expiresIn: '1d' }
+    { expiresIn: '1d' },
   );
 
   //Strip the password before returning

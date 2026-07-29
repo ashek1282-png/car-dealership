@@ -20,11 +20,14 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
   const token = authHeader.split(' ')[1];
 
   if (!token) {
-    throw new Error("Token is missing");
+    throw new Error('Token is missing');
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as unknown as { id: string; role: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as unknown as {
+      id: string;
+      role: string;
+    };
     req.user = decoded;
     next();
   } catch (error) {

@@ -12,16 +12,21 @@ describe('Inventory Module', () => {
   beforeAll(async () => {
     //Setup Regular User
     await request(app).post('/api/auth/register').send({
-      name: 'Inv User', email: 'inv_user@dealership.com', password: 'password123'
+      name: 'Inv User',
+      email: 'inv_user@dealership.com',
+      password: 'password123',
     });
     const userRes = await request(app).post('/api/auth/login').send({
-      email: 'inv_user@dealership.com', password: 'password123'
+      email: 'inv_user@dealership.com',
+      password: 'password123',
     });
     userToken = userRes.body.token;
 
     //Setup Admin User
     await request(app).post('/api/auth/register').send({
-      name: 'Inv Admin', email: 'inv_admin@dealership.com', password: 'password123'
+      name: 'Inv Admin',
+      email: 'inv_admin@dealership.com',
+      password: 'password123',
     });
 
     await prisma.user.update({
@@ -30,7 +35,8 @@ describe('Inventory Module', () => {
     });
 
     const adminRes = await request(app).post('/api/auth/login').send({
-      email: 'inv_admin@dealership.com', password: 'password123'
+      email: 'inv_admin@dealership.com',
+      password: 'password123',
     });
     adminToken = adminRes.body.token;
 
@@ -44,7 +50,7 @@ describe('Inventory Module', () => {
         year: 2024,
         category: 'SUV',
         price: 30000,
-        quantity: initialQuantity
+        quantity: initialQuantity,
       });
 
     vehicleId = vehicleRes.body.id;

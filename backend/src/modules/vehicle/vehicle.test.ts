@@ -11,16 +11,21 @@ describe('Vehicle Module', () => {
   beforeAll(async () => {
     //Setup Regular User
     await request(app).post('/api/auth/register').send({
-      name: 'Normal User', email: 'normal_v2@dealership.com', password: 'password123'
+      name: 'Normal User',
+      email: 'normal_v2@dealership.com',
+      password: 'password123',
     });
     const userRes = await request(app).post('/api/auth/login').send({
-      email: 'normal_v2@dealership.com', password: 'password123'
+      email: 'normal_v2@dealership.com',
+      password: 'password123',
     });
     userToken = userRes.body.token;
 
-   //Setup Admin User
+    //Setup Admin User
     await request(app).post('/api/auth/register').send({
-      name: 'Admin Boss', email: 'admin_v2@dealership.com', password: 'password123'
+      name: 'Admin Boss',
+      email: 'admin_v2@dealership.com',
+      password: 'password123',
     });
 
     //Promote directly in database
@@ -30,7 +35,8 @@ describe('Vehicle Module', () => {
     });
 
     const adminRes = await request(app).post('/api/auth/login').send({
-      email: 'admin_v2@dealership.com', password: 'password123'
+      email: 'admin_v2@dealership.com',
+      password: 'password123',
     });
     adminToken = adminRes.body.token;
   });
@@ -49,7 +55,14 @@ describe('Vehicle Module', () => {
       const res = await request(app)
         .post('/api/vehicles')
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ make: 'Nissan', model: 'Altima', year: 2024, category: 'Sedan', price: 25000, quantity: 5 });
+        .send({
+          make: 'Nissan',
+          model: 'Altima',
+          year: 2024,
+          category: 'Sedan',
+          price: 25000,
+          quantity: 5,
+        });
 
       expect(res.status).toBe(201);
       vehicleId = res.body.id; // Save ID for update/delete tests
@@ -58,7 +71,9 @@ describe('Vehicle Module', () => {
 
   describe('GET /api/vehicles', () => {
     it('should allow regular users to view vehicles', async () => {
-      const res = await request(app).get('/api/vehicles').set('Authorization', `Bearer ${userToken}`);
+      const res = await request(app)
+        .get('/api/vehicles')
+        .set('Authorization', `Bearer ${userToken}`);
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
     });

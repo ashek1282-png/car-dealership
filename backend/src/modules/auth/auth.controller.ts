@@ -1,50 +1,28 @@
 import type { Request, Response } from 'express';
 import * as authService from './auth.service.js';
 import { registerSchema, loginSchema } from './auth.schema.js';
-import { ZodError } from 'zod';
+import { catchAsync } from '../../shared/utils/catchAsync.js';
 
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const register = catchAsync(async (req: Request, res: Response) => {
+  const validatedData = registerSchema.parse(req.body);
+  const user = await authService.registerUser(validatedData);
+
+  res.status(201).json(user);
+});
+
+export const login = catchAsync(async (req: Request, res: Response) => {
+  const validatedData = loginSchema.parse(req.body);
+
   try {
-    // Validate incoming data
-    const validatedData = registerSchema.parse(req.body);
-
-    //Call service layer
-    const user = await authService.registerUser(validatedData);
-
-    //Return 201 Created
-    res.status(201).json(user);
-  } catch (error) {
-    //Handle Zod validation errors (returns 400)
-    if (error instanceof ZodError) {
-      res.status(400).json({ errors: error.message});
-      return;
-    }
-
-     console.error(error);
-    //Basic fallback for now, we will add a global error handler later
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
-export const login = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const validatedData = loginSchema.parse(req.body);
-
     const result = await authService.loginUser(validatedData);
-
     res.status(200).json(result);
   } catch (error: any) {
-    if (error instanceof ZodError) {
-      res.status(400).json({ errors: error.message});
-      return;
-    }
-
+    // Attach the 401 status so the global error handler knows how to format it
     if (error.message === 'INVALID_CREDENTIALS') {
-      res.status(401).json({ error: 'Invalid email or password' });
-      return;
+      error.statusCode = 401;
+      error.message = 'Invalid email or password';
     }
-
-    console.error("Login Error:", error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    // Throw it back for catchAsync to pass to the global handler
+    throw error;
   }
-};
+});
