@@ -77,4 +77,28 @@ describe('Inventory Module', () => {
       expect(res.body.quantity).toBe(initialQuantity + addedQuantity);
     });
   });
+  describe('POST /api/inventory/:id/purchase', () => {
+    it('should allow a regular user to purchase a vehicle and decrement stock', async () => {
+      // The vehicle currently has 15 in stock (initial 5 + 10 from the restock test)
+      const purchaseQuantity = 2;
+      const res = await request(app)
+        .post(`/api/inventory/${vehicleId}/purchase`)
+        .set('Authorization', `Bearer ${userToken}`) // Regular user token!
+        .send({ quantity: purchaseQuantity });
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe('Purchase successful');
+      expect(res.body.vehicle.quantity).toBe(13); // 15 - 2
+    });
+
+    it('should return 400 Bad Request if trying to purchase more than available stock', async () => {
+      const res = await request(app)
+        .post(`/api/inventory/${vehicleId}/purchase`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ quantity: 50 }); // Trying to buy 50 cars when only 13 are left
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Insufficient stock available');
+    });
+  });
 });
