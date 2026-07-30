@@ -1,1 +1,136 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@theme {
+  /* Surfaces — graphite/asphalt, not pure black */
+  --color-bg: #0c0e11;
+  --color-surface: #15181c;
+  --color-surface-2: #1d2126;
+  --color-surface-3: #262b31;
+  --color-border: #272c33;
+  --color-border-strong: #34393f;
+
+  /* Text */
+  --color-text: #edeff1;
+  --color-text-muted: #8a929b;
+  --color-text-faint: #5b626b;
+
+  /* Ignition blue — primary actions */
+  --color-primary: #3e7bfa;
+  --color-primary-hover: #5a90fb;
+  --color-primary-muted: #1a2c52;
+
+  /* Amber — gauges, warnings, low stock */
+  --color-amber: #f2a93b;
+  --color-amber-muted: #3a2c14;
+
+  /* Brake red — destructive, out of stock */
+  --color-danger: #ef4444;
+  --color-danger-hover: #f65f5f;
+  --color-danger-muted: #3a1a1a;
+
+  /* Success green — well stocked */
+  --color-success: #22c55e;
+  --color-success-muted: #143321;
+
+  --font-display: 'Oswald', 'Arial Narrow', sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-primary-muted);
+    color: var(--color-text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  * {
+    scrollbar-color: var(--color-surface-3) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.35s ease-out both;
+}
+
+.animate-toast-in {
+  animation: toast-in 0.25s ease-out both;
+}
+
+.animate-shimmer {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-surface-2) 8%,
+    var(--color-surface-3) 18%,
+    var(--color-surface-2) 33%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}

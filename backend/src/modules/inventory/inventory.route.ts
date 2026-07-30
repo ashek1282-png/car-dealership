@@ -6,6 +6,7 @@ const router = Router();
 
 router.use(authenticate);
 
-router.post('/:id/restock', requireAdmin, restockVehicle);
 router.post('/:id/purchase', purchaseVehicle);
+router.post('/:id/restock', requireAdmin, restockVehicle);
+
 export default router;

@@ -77,28 +77,69 @@ describe('Inventory Module', () => {
       expect(res.body.quantity).toBe(initialQuantity + addedQuantity);
     });
   });
-  describe('POST /api/inventory/:id/purchase', () => {
-    it('should allow a regular user to purchase a vehicle and decrement stock', async () => {
-      // The vehicle currently has 15 in stock (initial 5 + 10 from the restock test)
-      const purchaseQuantity = 2;
-      const res = await request(app)
-        .post(`/api/inventory/${vehicleId}/purchase`)
-        .set('Authorization', `Bearer ${userToken}`) // Regular user token!
-        .send({ quantity: purchaseQuantity });
 
-      expect(res.status).toBe(200);
-      expect(res.body.message).toBe('Purchase successful');
-      expect(res.body.vehicle.quantity).toBe(13); // 15 - 2
+  describe('POST /api/inventory/:id/purchase', () => {
+    let purchaseVehicleId: string;
+    const stockedQuantity = 3;
+
+    beforeAll(async () => {
+      const vehicleRes = await request(app)
+        .post('/api/vehicles')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          make: 'Toyota',
+          model: 'Corolla',
+          year: 2023,
+          category: 'Sedan',
+          price: 22000,
+          quantity: stockedQuantity,
+        });
+
+      purchaseVehicleId = vehicleRes.body.id;
     });
 
-    it('should return 400 Bad Request if trying to purchase more than available stock', async () => {
+    it('should return 401 if no token is provided', async () => {
+      const res = await request(app).post(`/api/inventory/${purchaseVehicleId}/purchase`).send({});
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should allow a regular user to purchase a vehicle and decrement the quantity by 1 by default', async () => {
       const res = await request(app)
-        .post(`/api/inventory/${vehicleId}/purchase`)
+        .post(`/api/inventory/${purchaseVehicleId}/purchase`)
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ quantity: 50 }); // Trying to buy 50 cars when only 13 are left
+        .send({});
+
+      expect(res.status).toBe(200);
+      expect(res.body.quantity).toBe(stockedQuantity - 1);
+    });
+
+    it('should decrement by the requested quantity when provided', async () => {
+      const res = await request(app)
+        .post(`/api/inventory/${purchaseVehicleId}/purchase`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ quantity: 2 });
+
+      expect(res.status).toBe(200);
+      expect(res.body.quantity).toBe(0);
+    });
+
+    it('should return 400 when purchasing more than the available stock', async () => {
+      const res = await request(app)
+        .post(`/api/inventory/${purchaseVehicleId}/purchase`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ quantity: 1 });
 
       expect(res.status).toBe(400);
-      expect(res.body.error).toBe('Insufficient stock available');
+    });
+
+    it('should return 404 when the vehicle does not exist', async () => {
+      const res = await request(app)
+        .post('/api/inventory/00000000-0000-0000-0000-000000000000/purchase')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({});
+
+      expect(res.status).toBe(404);
     });
   });
 });
