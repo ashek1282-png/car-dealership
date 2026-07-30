@@ -14,12 +14,9 @@ export const restockVehicle = catchAsync(async (req: Request, res: Response) => 
 
 export const purchaseVehicle = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id as string;
-  const { quantity } = purchaseSchema.parse(req.body);
+  const { quantity } = purchaseSchema.parse(req.body ?? {});
 
   const updatedVehicle = await inventoryService.purchase(id, quantity);
 
-  res.status(200).json({
-    message: 'Purchase successful',
-    vehicle: updatedVehicle,
-  });
+  res.status(200).json(updatedVehicle);
 });

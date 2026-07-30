@@ -11,14 +11,13 @@ export const restockVehicle = async (id: string, quantity: number) => {
   });
 };
 
-export const getVehicleStock = async (id: string) => {
+export const findVehicleById = async (id: string) => {
   return await prisma.vehicle.findUnique({
     where: { id },
-    select: { quantity: true },
   });
 };
 
-export const decrementVehicleStock = async (id: string, quantity: number) => {
+export const purchaseVehicle = async (id: string, quantity: number) => {
   return await prisma.vehicle.update({
     where: { id },
     data: {
